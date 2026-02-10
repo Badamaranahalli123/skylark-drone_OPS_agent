@@ -1,24 +1,22 @@
-import gspread
+import streamlit as st
 import pandas as pd
+import gspread
 from google.oauth2.service_account import Credentials
 
-SPREADSHEET_NAME = "Skylark_Drone_DB"
-
 def get_sheet(sheet_name):
-    scope = [
-        "https://www.googleapis.com/auth/spreadsheets",
-        "https://www.googleapis.com/auth/drive"
-    ]
+    scope = ["https://www.googleapis.com/auth/spreadsheets"]
 
-    creds = Credentials.from_service_account_file(
-        "service_account.json",
+    creds = Credentials.from_service_account_info(
+        st.secrets["gcp_service_account"],
         scopes=scope
     )
 
     client = gspread.authorize(creds)
-    spreadsheet = client.open(SPREADSHEET_NAME)
-    worksheet = spreadsheet.worksheet(sheet_name)
 
+    # IMPORTANT: replace this with your actual Google Sheet name
+    sheet = client.open("Skylark_Drone_DB")
+
+    worksheet = sheet.worksheet(sheet_name)
     data = worksheet.get_all_records()
     df = pd.DataFrame(data)
 
